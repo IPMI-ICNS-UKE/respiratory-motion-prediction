@@ -43,8 +43,10 @@ Tested with Python 3.9.11 and Pytorch 1.11.0.
 - Go to _scripts/run_hyperopt.py_.
 - Select one of the six implemented models and choose a prediction horizon.
 - Start _scripts/run_hyperopt.py_.
-- Track training and validation losses for different hyperparameter combinations with wandb. 
+- Track training and validation losses for different hyperparameter combinations with _weights&biases_ (wandb). 
 - Based on that, choose the best-performing model.
+
+Note that, for hyperparameter search a wandb account is required. Create a free account [here](https://docs.wandb.ai/quickstart) and login.
 
 ### Evaluation using trained models
 To reproduce our achieved results or to evaluate a newly trained model on the test set:
