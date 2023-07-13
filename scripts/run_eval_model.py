@@ -1,6 +1,4 @@
-"""
-Script to evaluate a trained model on the test set.
-"""
+"""Script to evaluate a trained model on the test set."""
 
 import logging
 
@@ -16,6 +14,5 @@ if __name__ == "__main__":
     # print all pre-defined functions which can be selected for Eval. ...
     # logger.info('\n'.join(list(filter(lambda x: x.startswith("init"), dir(Eval)))))
 
-    evaluater = Eval.init_dlinear_480() # select model and pred horizon here
+    evaluater = Eval.init_dlinear_480()  # select model and pred horizon here
     evaluater.eval_saved_model_using_test_set()
-

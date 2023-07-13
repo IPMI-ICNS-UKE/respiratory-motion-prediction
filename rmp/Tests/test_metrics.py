@@ -1,9 +1,9 @@
 from unittest import TestCase
 
 import numpy as np
-from rmp.my_utils.logger import LoggerMixin
 
 from rmp.metrics import calculate_relative_rmse
+from rmp.my_utils.logger import LoggerMixin
 
 
 class CalculateRelativeRmse(TestCase, LoggerMixin):

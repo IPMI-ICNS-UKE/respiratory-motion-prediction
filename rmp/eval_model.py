@@ -140,7 +140,8 @@ class Eval(LoggerMixin):
     def init_linear_offline_480(cls):
         return cls(
             future_steps=12,
-            model_filepath=SAVED_MODELS_DIR / Path("LINEAR_OFFLINE/smooth-snowball-548_480_ms_output_1/model.pth"),
+            model_filepath=SAVED_MODELS_DIR
+            / Path("LINEAR_OFFLINE/smooth-snowball-548_480_ms_output_1/model.pth"),
             config=dict(model_arch=ModelArch.LINEAR_OFFLINE, input_features=445),
         )
 
@@ -255,7 +256,7 @@ class Eval(LoggerMixin):
 
     @classmethod
     def init_transformer_v2_480(cls):
-        """only eval on server feasible due to high gpu usage"""
+        """only eval on server feasible due to high gpu usage."""
         return cls(
             future_steps=12,
             model_filepath=SAVED_MODELS_DIR
@@ -268,7 +269,7 @@ class Eval(LoggerMixin):
 
     @classmethod
     def init_transformer_v2_680(cls):
-        """only eval on server feasible due to high gpu usage"""
+        """only eval on server feasible due to high gpu usage."""
         return cls(
             future_steps=17,
             model_filepath=SAVED_MODELS_DIR
@@ -281,7 +282,7 @@ class Eval(LoggerMixin):
 
     @classmethod
     def init_transformer_v2_920(cls):
-        """only eval on server feasible due to high gpu usage"""
+        """only eval on server feasible due to high gpu usage."""
         return cls(
             future_steps=23,
             model_filepath=SAVED_MODELS_DIR
@@ -292,13 +293,17 @@ class Eval(LoggerMixin):
             ),
         )
 
-    def eval_saved_model_using_test_set(self, ):
+    def eval_saved_model_using_test_set(
+        self,
+    ):
         train_dataset, dev_dataset, test_dataset = Hyperoptimizer.init_datasets(
             self.config, self.config
         )
         if self.config["model_arch"] in [ModelArch.XGBOOST, ModelArch.LINEAR_OFFLINE]:
             logger.info(f"{self.model_filepath=}")
-            model, loaded_model_parameters = MachineGym.load_model(self.model_filepath.parent)
+            model, loaded_model_parameters = MachineGym.load_model(
+                self.model_filepath.parent
+            )
             if self.config["model_arch"] is ModelArch.LINEAR_OFFLINE:
                 model_cls = LinearOffline(
                     future_steps=loaded_model_parameters["future_steps"],
@@ -335,7 +340,9 @@ class Eval(LoggerMixin):
                 eval_batch_size=self.config["eval_batch_size"],
             )
         else:
-            loaded_model_parameters, state_dict = DeepGym.load_model(filepath=self.model_filepath)
+            loaded_model_parameters, state_dict = DeepGym.load_model(
+                filepath=self.model_filepath
+            )
             if self.config["model_arch"] is ModelArch.DLINEAR:
                 model = DecompLinear(
                     seq_len=loaded_model_parameters["seq_len"],
@@ -387,9 +394,13 @@ class Eval(LoggerMixin):
                 eval_batch_size=self.config["eval_batch_size"],
                 max_tot_iter=0,
             )
-        assert loaded_model_parameters["input_features"] == self.config["input_features"]
+        assert (
+            loaded_model_parameters["input_features"] == self.config["input_features"]
+        )
         assert loaded_model_parameters["future_steps"] == self.config["future_steps"]
-        assert loaded_model_parameters["output_features"] == self.config["output_features"]
+        assert (
+            loaded_model_parameters["output_features"] == self.config["output_features"]
+        )
         assert loaded_model_parameters["model_arch"] == self.config["model_arch"].value
         num_training_steps = BaseGym.calc_number_training_steps(
             training_phase_s=self.config["training_phase_s"],

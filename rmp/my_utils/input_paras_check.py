@@ -12,10 +12,8 @@ def is_natural_number(n) -> bool:
     return isinstance(n, int) and n > 0
 
 
-def input_checks(config: dict) -> dict:
-    """
-    Performs trivial input checks to catch easy errors.
-    """
+def input_checks(config: dict) -> dict:  # noqa: C901
+    """Performs trivial input checks to catch easy errors."""
     if not isinstance(config["model_arch"], ModelArch):
         raise NotImplementedError(f"{config['model_arch']=} is not supported yet.")
     if not is_natural_number(config["train_batch_size"]):

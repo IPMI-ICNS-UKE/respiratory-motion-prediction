@@ -1,6 +1,5 @@
 import datetime
 import logging
-from functools import partial
 from pathlib import Path
 
 import dill
@@ -21,7 +20,7 @@ from rmp.models import (
     Transformer,
     TransformerTSFv2,
     XGBoostTSF,
-    YourCustomModel
+    YourCustomModel,
 )
 from rmp.my_utils.common_types import PathLike
 from rmp.my_utils.decorators import convert
@@ -66,11 +65,6 @@ class Hyperoptimizer(LoggerMixin):
             config={**self.constant_config, **hyper_parameters},
             project=f"TSF-{self.constant_config['model_arch'].value}",
             dir=RESULT_DIR,
-        )
-        wandb_info = dict(
-            wandb_run_name=wandb.run.name,
-            wandb_run_project=wandb.run.project,
-            wandb_run_config=wandb.run.config,
         )
         run_name = wandb.run.name
         result_dir = (

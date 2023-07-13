@@ -1,7 +1,6 @@
-"""
-Main script to start model training.
-Starts and runs the hyperopt pipeline.
+"""Main script to start model training.
 
+Starts and runs the hyperopt pipeline.
 """
 from __future__ import annotations
 
@@ -13,28 +12,29 @@ from rmp.models import ModelArch
 from rmp.my_utils.input_paras_check import input_checks
 from rmp.my_utils.logger import init_fancy_logging
 from rmp.search_spaces import (
+    SEARCH_SPACE_CUSTOM_MODEL,
     SEARCH_SPACE_DLINEAR,
     SEARCH_SPACE_LINEAR,
     SEARCH_SPACE_LSTM,
     SEARCH_SPACE_TRANSFORMER,
     SEARCH_SPACE_XGB,
     SEARCH_SPACE_TRANSFORMER_TSFv2,
-    SEARCH_SPACE_CUSTOM_MODEL
 )
 
 logger = logging.getLogger(__name__)
 
 
 def make_config(
-        model_arch: ModelArch,
-        train_batch_size: int,
-        eval_batch_size: int,
-        future_steps: int,
-        train_signal_length_s: None | int,
-        train_min_length_s: int,
-        test_signal_length_s: int,
+    model_arch: ModelArch,
+    train_batch_size: int,
+    eval_batch_size: int,
+    future_steps: int,
+    train_signal_length_s: None | int,
+    train_min_length_s: int,
+    test_signal_length_s: int,
 ):
-    """Creating and checking configuration input before staring hyperparameter search.
+    """Creating and checking configuration input before staring hyperparameter
+    search.
 
     :param model_arch: chosen model architecture
     :param train_batch_size: batch size for training

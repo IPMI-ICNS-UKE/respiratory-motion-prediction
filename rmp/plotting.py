@@ -1,5 +1,5 @@
-"""
-Simple functions for plotting signals during training and final results.
+"""Simple functions for plotting signals during training and final results.
+
 Also, visualization of attention heads and corresponding tikz code.
 """
 from __future__ import annotations

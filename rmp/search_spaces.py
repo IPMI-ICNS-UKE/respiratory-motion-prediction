@@ -1,6 +1,4 @@
-"""
-For each model, a hyperparameter search space is defined.
-"""
+"""For each model, a hyperparameter search space is defined."""
 
 import numpy as np
 from hyperopt import hp

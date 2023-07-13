@@ -15,9 +15,7 @@ from rmp.my_utils.logger import LoggerMixin
 
 
 class ModelArch(Enum):
-    """
-    This class contains all six investigated models.
-    """
+    """This class contains all six investigated models."""
 
     XGBOOST = "xgboost"
     LSTM = "lstm"
@@ -29,17 +27,17 @@ class ModelArch(Enum):
 
 
 class YourCustomModel(nn.Module, LoggerMixin):
-    """
-    template for adding a new model for respiratory motion prediction
-    """
+    """template for adding a new model for respiratory motion prediction."""
 
     def __init__(self):
         super().__init__()
         self.input_paras = locals()
         # init your model here
-        self.scaler = nn.Parameter(torch.tensor(10.))  # most trivial model
-        self.logger.error(f"Add custom model logic here. Currently, "
-                          f"placeholer 1-parameter model, does not make any sense.")
+        self.scaler = nn.Parameter(torch.tensor(10.0))  # most trivial model
+        self.logger.error(
+            "Add custom model logic here. Currently, "
+            "placeholer 1-parameter model, does not make any sense."
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         self.logger.debug(f"input shape {x.shape=}")  # (batch, seq_len, input_features)
@@ -49,14 +47,14 @@ class YourCustomModel(nn.Module, LoggerMixin):
 
         self.logger.info(f"{self.scaler=}")
         self.logger.debug(f"final shape {x.shape=}")  # (batch, seq_len, 1)
-        self.logger.error(f"Add forward function logic of your custom model here. Currently, nothing implemented.")
+        self.logger.error(
+            "Add forward function logic of your custom model here. Currently, nothing implemented."
+        )
         return x
 
 
 class MovingAvg(nn.Module):
-    """
-    Moving average block to highlight the trend of time series
-    """
+    """Moving average block to highlight the trend of time series."""
 
     def __init__(self, kernel_size, stride):
         super().__init__()
@@ -74,9 +72,7 @@ class MovingAvg(nn.Module):
 
 
 class SeriesDecomp(nn.Module):
-    """
-    Series decomposition block
-    """
+    """Series decomposition block."""
 
     def __init__(self, kernel_size):
         super().__init__()
@@ -89,8 +85,8 @@ class SeriesDecomp(nn.Module):
 
 
 class DecompLinear(nn.Module, LoggerMixin):
-    """
-    Decomposition Linear Model.
+    """Decomposition Linear Model.
+
     Originally published in https://arxiv.org/pdf/2205.13504.pdf.
     Code highly inspired by https://github.com/cure-lab/LTSF-Linear/blob/main/models/DLinear.py
     """
@@ -166,20 +162,19 @@ class DecompLinear(nn.Module, LoggerMixin):
 
 # lstm-related
 class Many2Many(nn.Module, LoggerMixin):
-    """
-    Our LSTM implementation.
-    Code and concept were inspired by
-        - Lin et al 2019; DOI 10.1088/1361-6560/ab13fa
-        - Lombardo et al 2022; DOI 10.1088/1361-6560/ac60b7, https://github.com/LMUK-RADONC-PHYS-RES/lstm_centroid_prediction;
+    """Our LSTM implementation. Code and concept were inspired by.
+
+    - Lin et al 2019; DOI 10.1088/1361-6560/ab13fa
+    - Lombardo et al 2022; DOI 10.1088/1361-6560/ac60b7, https://github.com/LMUK-RADONC-PHYS-RES/lstm_centroid_prediction;
     """
 
     def __init__(
-            self,
-            input_features: int,
-            num_layers: int,
-            hidden_dim: int,
-            output_dim: int,
-            dropout: float = 0,
+        self,
+        input_features: int,
+        num_layers: int,
+        hidden_dim: int,
+        output_dim: int,
+        dropout: float = 0,
     ):
         super().__init__()
         self.hidden_dim = hidden_dim
@@ -205,7 +200,7 @@ class Many2Many(nn.Module, LoggerMixin):
         )
         predictions = torch.zeros((batch_size, seq_length, self.output_dim)).to(DEVICE)
         for step in range(seq_length):
-            input_per_step = input_batch[:, step: step + 1, :]
+            input_per_step = input_batch[:, step : step + 1, :]
             lstm_out, self.h_c = self.lstm(input_per_step, self.h_c)
             final_hidden_state = lstm_out[:, -1, :].view(
                 batch_size, -1
@@ -220,12 +215,12 @@ class Many2Many(nn.Module, LoggerMixin):
 
 class LinearOffline(nn.Module, LoggerMixin):
     def __init__(
-            self,
-            future_steps: int,
-            input_features: int,
-            output_features: int,
-            alpha: float = 1e-05,
-            solver: str = "auto",
+        self,
+        future_steps: int,
+        input_features: int,
+        output_features: int,
+        alpha: float = 1e-05,
+        solver: str = "auto",
     ):
         super().__init__()
         self.future_steps = future_steps
@@ -252,22 +247,23 @@ class LinearOffline(nn.Module, LoggerMixin):
 
 
 class XGBoostTSF(nn.Module, LoggerMixin):
-    """
-    XGBOOST for time series forecasting.
-    Every element of the sliding input window is considered as a separate feature.
-    This concept was proposed by Elsayed et al 2021 (https://doi.org/10.48550/arXiv.2101.02118).
+    """XGBOOST for time series forecasting.
+
+    Every element of the sliding input window is considered as a
+    separate feature. This concept was proposed by Elsayed et al 2021
+    (https://doi.org/10.48550/arXiv.2101.02118).
     """
 
     def __init__(
-            self,
-            n_estimators: int,
-            max_depth: int,
-            subsample_baselearner: float,
-            gamma: float,
-            min_child_weight: float,
-            learning_rate: float,
-            reg_lambda: float,
-            future_steps: int,
+        self,
+        n_estimators: int,
+        max_depth: int,
+        subsample_baselearner: float,
+        gamma: float,
+        min_child_weight: float,
+        learning_rate: float,
+        reg_lambda: float,
+        future_steps: int,
     ):
         super(XGBoostTSF).__init__()
         self.future_steps = future_steps
@@ -332,14 +328,13 @@ class PositionalTimestepEncoding(nn.Module):
             random_start = random.randint(0, self.max_len - x.size(1))
         else:
             random_start = 0
-        x = x + self.pe[:, random_start: random_start + x.size(1)]
+        x = x + self.pe[:, random_start : random_start + x.size(1)]
         return self.dropout(x)
 
 
 class CustomTransformerEncoderLayer(nn.TransformerEncoderLayer, LoggerMixin):
-    """
-    Overwriting pytorch's build-in TransformerEncoderLayer to get attention heads.
-    """
+    """Overwriting pytorch's build-in TransformerEncoderLayer to get attention
+    heads."""
 
     def forward(self, src, src_mask=None, src_key_padding_mask=None):
         r"""Pass the input through the encoder layer.
@@ -383,9 +378,8 @@ class CustomTransformerEncoderLayer(nn.TransformerEncoderLayer, LoggerMixin):
 
 
 class CustomTransformerEncoder(nn.TransformerEncoder, LoggerMixin):
-    """
-    Overwriting pytorch's build-in TransformerEncoder to get attention heads.
-    """
+    """Overwriting pytorch's build-in TransformerEncoder to get attention
+    heads."""
 
     def forward(self, src, mask=None, src_key_padding_mask=None):
         r"""Pass the input through the encoder layers in turn.
@@ -413,24 +407,26 @@ class CustomTransformerEncoder(nn.TransformerEncoder, LoggerMixin):
 
 
 class Transformer(nn.Module, LoggerMixin):
-    """
-    Our implementation of an only-encoder Transformer using masked attention heads.
-    Note that, an initial learning period of 20s is included for each signal. Here, no masking is applied as it is
-    excluded from the final evaluation.
+    """Our implementation of an only-encoder Transformer using masked attention
+    heads.
+
+    Note that, an initial learning period of 20s is included for each
+    signal. Here, no masking is applied as it is excluded from the final
+    evaluation.
     """
 
     def __init__(
-            self,
-            input_features_dim: int = 25,
-            embedding_features: int = 512,
-            num_layers: int = 3,
-            dropout: float = 0.0,
-            n_heads: int = 4,
-            future_steps: int = 12,
-            pre_training_size: int = 20,
-            output_dim: int = 1,
-            max_signal_length_s: int = 300,
-            scaling_factor: int = 10,
+        self,
+        input_features_dim: int = 25,
+        embedding_features: int = 512,
+        num_layers: int = 3,
+        dropout: float = 0.0,
+        n_heads: int = 4,
+        future_steps: int = 12,
+        pre_training_size: int = 20,
+        output_dim: int = 1,
+        max_signal_length_s: int = 300,
+        scaling_factor: int = 10,
     ):
         super().__init__()
         self.scaling_factor = scaling_factor
@@ -455,7 +451,7 @@ class Transformer(nn.Module, LoggerMixin):
         )
 
     def _generate_square_subsequent_mask(
-            self, sz: int, include_training_period: bool
+        self, sz: int, include_training_period: bool
     ) -> torch.tensor:
         mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
         mask = (
@@ -469,9 +465,9 @@ class Transformer(nn.Module, LoggerMixin):
         return mask.to(DEVICE)
 
     def forward(
-            self,
-            src: torch.Tensor,
-            include_training_period: bool = True,
+        self,
+        src: torch.Tensor,
+        include_training_period: bool = True,
     ) -> torch.Tensor:
         batch_size, seq_len, input_features = src.size()
         src = self.embedding_layer(src)
@@ -484,8 +480,8 @@ class Transformer(nn.Module, LoggerMixin):
         return output  # note, does also include training phase outputs
 
     def infer(
-            self,
-            src: torch.Tensor,
+        self,
+        src: torch.Tensor,
     ) -> torch.Tensor:
         batch_size, src_seq_len, input_features = src.size()
         outputs = []
@@ -519,14 +515,14 @@ class TransformerTSFv2(torch.nn.Module, LoggerMixin):
     """
 
     def __init__(
-            self,
-            layer_dim_val: int,
-            dec_seq_len: int,
-            out_seq_len: int,
-            n_decoder_layers: int = 1,
-            n_encoder_layers: int = 1,
-            n_heads: int = 1,
-            dropout: float = 0.0,
+        self,
+        layer_dim_val: int,
+        dec_seq_len: int,
+        out_seq_len: int,
+        n_decoder_layers: int = 1,
+        n_encoder_layers: int = 1,
+        n_heads: int = 1,
+        dropout: float = 0.0,
     ):
         super().__init__()
         self.dec_seq_len = dec_seq_len
@@ -592,16 +588,15 @@ class TransformerTSFv2(torch.nn.Module, LoggerMixin):
         e = self.pos(e)
         self.logger.debug(f"input shape {e.size()=}")
         e = self.encoder(e)
-        d = self.dec_input_fc(x[:, -self.dec_seq_len:])
+        d = self.dec_input_fc(x[:, -self.dec_seq_len :])
         d = self.decoder(d, memory=e)
         x = self.out_fc(d.flatten(start_dim=1))
         return x
 
 
 class PositionalEncoding(nn.Module):
-    """
-    Taken from https://pytorch.org/tutorials/beginner/transformer_tutorial.html
-    """
+    """Taken from
+    https://pytorch.org/tutorials/beginner/transformer_tutorial.html."""
 
     def __init__(self, d_model, max_len=5000):
         super().__init__()

@@ -1,7 +1,5 @@
-"""
-Loads respiratory signal and performs preprocessing (smoothing, de-noising, scaling etc.)
-
-"""
+"""Loads respiratory signal and performs preprocessing (smoothing, de-noising,
+scaling etc.)"""
 from __future__ import annotations
 
 from enum import Enum
@@ -24,9 +22,7 @@ from rmp.my_utils.time_series_utils import (
 
 
 class ModelPhases(Enum):
-    """
-    Phase of the model in the pipeline.
-    """
+    """Phase of the model in the pipeline."""
 
     TRAINING = "train"
     VALIDATION = "val"
@@ -35,19 +31,19 @@ class ModelPhases(Enum):
 
 class RpmSignals(Dataset, LoggerMixin):
     def __init__(
-            self,
-            db_root: Path,
-            max_num_curves: int | None = None,
-            phase: ModelPhases = ModelPhases.TRAINING,
-            signal_length_s: int | None = None,
-            scaling_period_s: tuple[float, float] | None = (0, 20),
-            white_noise_db: int | None = None,
-            future_points: int = 12,
-            input_features: int = 1,
-            output_features: int = 1,
-            min_length_s: int = 0,
-            use_smooth_target: bool = True,
-            cache_returned_data: bool = False,
+        self,
+        db_root: Path,
+        max_num_curves: int | None = None,
+        phase: ModelPhases = ModelPhases.TRAINING,
+        signal_length_s: int | None = None,
+        scaling_period_s: tuple[float, float] | None = (0, 20),
+        white_noise_db: int | None = None,
+        future_points: int = 12,
+        input_features: int = 1,
+        output_features: int = 1,
+        min_length_s: int = 0,
+        use_smooth_target: bool = True,
+        cache_returned_data: bool = False,
     ):
         super().__init__()
         self.mode = phase
@@ -84,11 +80,9 @@ class RpmSignals(Dataset, LoggerMixin):
         return len(self.query)
 
     def __getitem__(
-            self, index: int
+        self, index: int
     ) -> tuple[str, Tensor, Tensor, dict[str, Any]] | tuple[str, Tensor, Tensor]:
-        """
-        Preprocessing of raw signals in a sliding window fashion.
-        """
+        """Preprocessing of raw signals in a sliding window fashion."""
         signal = self.query[index]
         research_number, modality, fraction = (
             signal.research_number,
@@ -167,7 +161,7 @@ class RpmSignals(Dataset, LoggerMixin):
         time_series_target = torch.from_numpy(output_wdws.astype(np.float32))
         assert time_series_input.shape[-1] == self.input_features
         assert (
-                time_series_target.shape[-1] == self.output_features
+            time_series_target.shape[-1] == self.output_features
         ), f"{time_series_target.shape=}vs.{self.output_features=}"
         if self.cache_returned_data:
             if self.use_smooth_target:
@@ -185,16 +179,19 @@ class RpmSignals(Dataset, LoggerMixin):
 
     @staticmethod
     def cache_time_series(name, time, input_time_series, target_time_series):
-        return dict(name=name, time=time, input_time_series=input_time_series,
-                    target_time_series=target_time_series,
-                    )
+        return dict(
+            name=name,
+            time=time,
+            input_time_series=input_time_series,
+            target_time_series=target_time_series,
+        )
 
     @staticmethod
     def select_random_subset(
-            time_series_len: int,
-            signal_length_s: int,
-            future_points: int,
-            samples_per_second: int,
+        time_series_len: int,
+        signal_length_s: int,
+        future_points: int,
+        samples_per_second: int,
     ) -> tuple[int, int]:
         num_points = samples_per_second * signal_length_s
         if time_series_len < num_points:
@@ -211,10 +208,10 @@ class RpmSignals(Dataset, LoggerMixin):
 
     @staticmethod
     def sliding_wdw_wrapper(
-            time_series: np.array,
-            future_points: int,
-            input_features: int,
-            output_features: int,
+        time_series: np.array,
+        future_points: int,
+        input_features: int,
+        output_features: int,
     ) -> tuple[np.ndarray, np.ndarray]:
         if input_features < output_features or output_features > future_points:
             raise ValueError(
@@ -235,12 +232,13 @@ class RpmSignals(Dataset, LoggerMixin):
 
     @staticmethod
     def sliding_wdws_vectorized(
-            data: np.ndarray, wdw_size_i: int = 6, wdw_size_o: int = 2, step_size: int = 1
+        data: np.ndarray, wdw_size_i: int = 6, wdw_size_o: int = 2, step_size: int = 1
     ) -> tuple[np.ndarray, np.ndarray]:
-        """
-        Taken from https://github.com/LMUK-RADONC-PHYS-RES/lstm_centroid_prediction.
-        Given a sequence of input data, subdivide it in input and output windows (vectorized operations).
-        Adapted from: https://towardsdatascience.com/fast-and-robust-sliding-window-vectorization-with-numpy-3ad950ed62f5.
+        """Taken from https://github.com/LMUK-RADONC-PHYS-
+        RES/lstm_centroid_prediction. Given a sequence of input data, subdivide
+        it in input and output windows (vectorized operations). Adapted from:
+        https://towardsdatascience.com/fast-and-robust-sliding-window-
+        vectorization-with-numpy-3ad950ed62f5.
 
         :param data: array with input data
         :param wdw_size_i: length of generated window to be used as input
@@ -251,11 +249,11 @@ class RpmSignals(Dataset, LoggerMixin):
         start = 0
         stop = len(data)
         idx_windows_i = (
-                start
-                + np.expand_dims(np.arange(wdw_size_i), 0)
-                + np.expand_dims(
-            np.arange(stop - wdw_size_i - wdw_size_o + 1, step=step_size), 0
-        ).T
+            start
+            + np.expand_dims(np.arange(wdw_size_i), 0)
+            + np.expand_dims(
+                np.arange(stop - wdw_size_i - wdw_size_o + 1, step=step_size), 0
+            ).T
         )
         idx_windows_o = idx_windows_i[:, -wdw_size_o:] + wdw_size_o
         return (

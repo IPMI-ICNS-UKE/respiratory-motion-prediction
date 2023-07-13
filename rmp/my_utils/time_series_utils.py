@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import numpy as np
 from scipy import fftpack
 from sklearn.preprocessing import MinMaxScaler, RobustScaler

@@ -62,9 +62,8 @@ def calculate_relative_rmse(
     y_true: np.ndarray,
     future_steps: int,
 ) -> float:
-    """
-    For details, see Ernst et al 2013 (DOI: 10.1088/0031-9155/58/11/3911) (section 3.4).
-    """
+    """For details, see Ernst et al 2013 (DOI: 10.1088/0031-9155/58/11/3911)
+    (section 3.4)."""
 
     # delay y_true based on future_steps
     y_true_delayed = np.concatenate((np.zeros((future_steps,)), y_true[:-future_steps]))

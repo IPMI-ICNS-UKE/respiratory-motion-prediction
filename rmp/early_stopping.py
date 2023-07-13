@@ -2,10 +2,8 @@ from rmp.my_utils.logger import LoggerMixin
 
 
 class EarlyStopping(LoggerMixin):
-    """
-    Early stopping to stop the training when the loss does not improve after
-    certain epochs.
-    """
+    """Early stopping to stop the training when the loss does not improve after
+    certain epochs."""
 
     def __init__(self, patience: int = 5, min_delta: float = 0, phase: str = ""):
         """

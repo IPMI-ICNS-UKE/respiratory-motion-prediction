@@ -4,20 +4,18 @@ from unittest import TestCase
 
 import numpy as np
 import torch
-from rmp.my_utils.logger import LoggerMixin
 
 from rmp.dataloader import RpmSignals
 from rmp.global_config import DEVICE
 from rmp.models import Transformer
+from rmp.my_utils.logger import LoggerMixin
 
 logger = logging.getLogger(__name__)
 
 
 class TransformerInferenceTester(TestCase, LoggerMixin):
-    """
-    forward and inference method of the Transformer should return the same output
-    (if model in eval mode (no dropout etc.))
-    """
+    """forward and inference method of the Transformer should return the same
+    output (if model in eval mode (no dropout etc.))"""
 
     def setUp(self) -> None:
         time = np.arange(0, 30, 0.04)

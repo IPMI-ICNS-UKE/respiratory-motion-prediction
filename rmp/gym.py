@@ -33,17 +33,17 @@ logger = logging.getLogger(__name__)
 
 class BaseGym(ABC, LoggerMixin):
     def __init__(
-            self,
-            model_arch: ModelArch,
-            model: nn.Module,
-            output_features: int,
-            input_features: int,
-            future_steps: int,
-            train_dataset: Dataset,
-            val_dataset: Dataset,
-            train_batch_size: int,
-            test_dataset: Dataset = None,
-            eval_batch_size: int = None,
+        self,
+        model_arch: ModelArch,
+        model: nn.Module,
+        output_features: int,
+        input_features: int,
+        future_steps: int,
+        train_dataset: Dataset,
+        val_dataset: Dataset,
+        train_batch_size: int,
+        test_dataset: Dataset = None,
+        eval_batch_size: int = None,
     ):
         self.model_arch = model_arch
         self.model = model
@@ -85,36 +85,36 @@ class BaseGym(ABC, LoggerMixin):
         pass
 
     def print_stats_from_df(
-            self, df: pd.DataFrame, arch: str, phase: ModelPhases, deliminator: str = "_"
+        self, df: pd.DataFrame, arch: str, phase: ModelPhases, deliminator: str = "_"
     ):
         pd.set_option("display.max_columns", None)
         final_stats = {
             f"{phase.value}_final_mse": str(
                 round(df[f"{arch}{deliminator}mse"].mean(), 4)
             )
-                                        + "+/-"
-                                        + str(round(df[f"{arch}{deliminator}mse"].std(), 4)),
+            + "+/-"
+            + str(round(df[f"{arch}{deliminator}mse"].std(), 4)),
             f"{phase.value}_final_rmse": str(
                 round(df[f"{arch}{deliminator}rmse"].mean(), 4)
             )
-                                         + "+/-"
-                                         + str(round(df[f"{arch}{deliminator}rmse"].std(), 4)),
+            + "+/-"
+            + str(round(df[f"{arch}{deliminator}rmse"].std(), 4)),
             f"{phase.value}_final_mae": str(
                 round(df[f"{arch}{deliminator}mae"].mean(), 4)
             )
-                                        + "+/-"
-                                        + str(round(df[f"{arch}{deliminator}mae"].std(), 4)),
+            + "+/-"
+            + str(round(df[f"{arch}{deliminator}mae"].std(), 4)),
             f"{phase.value}_final_me": str(
                 round(df[f"{arch}{deliminator}me"].mean(), 4)
             )
-                                       + "+/-"
-                                       + str(round(df[f"{arch}{deliminator}me"].std(), 4)),
+            + "+/-"
+            + str(round(df[f"{arch}{deliminator}me"].std(), 4)),
         }
         try:
             final_stats[f"{phase.value}_final_rel_rmse"] = (
-                    str(round(df[f"{arch}{deliminator}rel_rmse"].mean(), 4))
-                    + "+/-"
-                    + str(round(df[f"{arch}{deliminator}rel_rmse"].std(), 4))
+                str(round(df[f"{arch}{deliminator}rel_rmse"].mean(), 4))
+                + "+/-"
+                + str(round(df[f"{arch}{deliminator}rel_rmse"].std(), 4))
             )
 
         except Exception as e:
@@ -143,7 +143,7 @@ class BaseGym(ABC, LoggerMixin):
 
     @staticmethod
     def calc_number_training_steps(
-            training_phase_s: int, input_features: int, output_features: int
+        training_phase_s: int, input_features: int, output_features: int
     ) -> int:
         if training_phase_s == 0:
             return 0
@@ -152,12 +152,12 @@ class BaseGym(ABC, LoggerMixin):
 
     @staticmethod
     def update_wandb(
-            phase: str,
-            targets: torch.Tensor,
-            outputs: torch.tensor,
-            return_errors: bool = False,
-            seen_curves: int = 0,
-            **kwargs,
+        phase: str,
+        targets: torch.Tensor,
+        outputs: torch.tensor,
+        return_errors: bool = False,
+        seen_curves: int = 0,
+        **kwargs,
     ):
         pred_errors = metrics.calculate_prediction_errors(
             y_true=targets,
@@ -207,12 +207,12 @@ class BaseGym(ABC, LoggerMixin):
         return loader
 
     def save_input_and_predictions(
-            self,
-            feature: np.ndarray,
-            target: np.ndarray,
-            output: np.ndarray,
-            sample_name: str,
-            result_dir: Path = RESULT_DIR
+        self,
+        feature: np.ndarray,
+        target: np.ndarray,
+        output: np.ndarray,
+        sample_name: str,
+        result_dir: Path = RESULT_DIR,
     ):
 
         feature = feature.squeeze()
@@ -220,12 +220,12 @@ class BaseGym(ABC, LoggerMixin):
         output = output.squeeze()
 
         # the last value of the sliding window, i.e. the point being the prediction horizon before the target
-        input_amplitude = feature[:,-1]
+        input_amplitude = feature[:, -1]
         self.logger.debug(
             f"{feature.shape=}, {input_amplitude.shape=}, {target.shape=}, {output.shape=}, {sample_name=} "
         )
         assert output.shape == target.shape == input_amplitude.shape
-        time = 0  # ToDo add time component
+        # To Do time = 0  add time component
         df = pd.DataFrame.from_dict(
             dict(amplitude=input_amplitude, target=target, output=output),
             dtype=np.float32,
@@ -233,7 +233,9 @@ class BaseGym(ABC, LoggerMixin):
         saving_dir = result_dir / f"{self.model_arch.value}_{40 * self.future_steps}ms"
         saving_dir.mkdir(exist_ok=True)
         df.to_csv(saving_dir / f"{sample_name}.csv", index=False)
-        self.logger.info(f"Input and predictions of {sample_name} where saved at {saving_dir=}")
+        self.logger.info(
+            f"Input and predictions of {sample_name} where saved at {saving_dir=}"
+        )
 
 
 class MachineGym(BaseGym):
@@ -248,10 +250,10 @@ class MachineGym(BaseGym):
         loader = self._pre_eval_checking(phase=phase)
         errors_all_samples = list()
         for i, (names, features, targets) in enumerate(
-                tqdm(loader, logger=self.logger, log_level=logging.INFO)
+            tqdm(loader, logger=self.logger, log_level=logging.INFO)
         ):
             assert (
-                    features.shape[0] == targets.shape[0] == 1
+                features.shape[0] == targets.shape[0] == 1
             ), "batch_size greater 1 is not supported"
             sample_name = names[0]
             feature = features[0, training_phase:, :].numpy()
@@ -271,7 +273,12 @@ class MachineGym(BaseGym):
 
             if phase is ModelPhases.TESTING:
                 self.save_input_and_predictions(
-                    feature, target, output, sample_name.sample_name, result_dir=result_dir)
+                    feature,
+                    target,
+                    output,
+                    sample_name.sample_name,
+                    result_dir=result_dir,
+                )
             if plot:
                 plot_random_signal_in_batch(
                     names=names,
@@ -305,9 +312,9 @@ class MachineGym(BaseGym):
 
     @convert("result_dir", converter=Path)
     def train(self, result_dir: PathLike) -> float:
-        outputs_list, features, targets = [], [], []
+        features, targets = [], []
         for i, (name, feature, target) in enumerate(
-                tqdm(self.train_loader, logger=self.logger, log_level=logging.INFO)
+            tqdm(self.train_loader, logger=self.logger, log_level=logging.INFO)
         ):
             if feature.shape[0] != 1:
                 raise ValueError
@@ -372,16 +379,16 @@ class MachineGym(BaseGym):
 
 class DeepGym(BaseGym):
     def __init__(
-            self,
-            *args,
-            max_tot_iter: int,
-            learning_rate: float = 0.001,
-            weight_decay: float = 0.01,
-            criterion: torch.nn.modules.loss = None,
-            early_stopper_criteria: dict = None,
-            lr_scheduler_linear_decay: float = 1,
-            gradient_clipping: bool = False,
-            **kwargs,
+        self,
+        *args,
+        max_tot_iter: int,
+        learning_rate: float = 0.001,
+        weight_decay: float = 0.01,
+        criterion: torch.nn.modules.loss = None,
+        early_stopper_criteria: dict = None,
+        lr_scheduler_linear_decay: float = 1,
+        gradient_clipping: bool = False,
+        **kwargs,
     ):
 
         super().__init__(*args, **kwargs)
@@ -418,7 +425,7 @@ class DeepGym(BaseGym):
             )
         self.lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
             self.optimizer,
-            lr_lambda=lambda epoch: max(lr_scheduler_linear_decay ** epoch, 1e-5),
+            lr_lambda=lambda epoch: max(lr_scheduler_linear_decay**epoch, 1e-5),
         )
         self.scaler = GradScaler()
         self.tot_iter = 0
@@ -437,10 +444,10 @@ class DeepGym(BaseGym):
 
     @staticmethod
     def adaptive_clip_grad(
-            parameters: torch.Tensor,
-            clip_factor: float = 0.01,
-            eps: float = 1e-3,
-            norm_type: float = 2.0,
+        parameters: torch.Tensor,
+        clip_factor: float = 0.01,
+        eps: float = 1e-3,
+        norm_type: float = 2.0,
     ):
         if isinstance(parameters, torch.Tensor):
             parameters = [parameters]
@@ -486,19 +493,38 @@ class DeepGym(BaseGym):
             raise ValueError(f"{filepath=}")
         gym_parameters = self.__dict__.copy()
         # remove dataloaders etc. from gym-parameters
-        unwanted_keys = ["scaler", "early_val_stopper", "early_train_stopper", "criterion", "optimizer", "lr_scheduler",
-                         "model", "train_loader", "val_loader", '_LoggerMixin__logger', "test_loader", "lr_scheduler"]
+        unwanted_keys = [
+            "scaler",
+            "early_val_stopper",
+            "early_train_stopper",
+            "criterion",
+            "optimizer",
+            "lr_scheduler",
+            "model",
+            "train_loader",
+            "val_loader",
+            "_LoggerMixin__logger",
+            "test_loader",
+            "lr_scheduler",
+        ]
         for unwanted_key in unwanted_keys:
             gym_parameters.pop(unwanted_key, None)
         model_paras = self.model.input_paras
         model_paras.pop("self")
         model_paras.pop("__class__")
         # assert keys which are in model_paras and in gym are equal: otherwise major bug
-        assert all([value == model_paras[key] for key, value in gym_parameters.items() if
-                    key in model_paras.keys()]), f"{model_paras=} vs. {gym_parameters=}"
-        final_dict = {**gym_parameters,
-                      **dict(model_state_dict=self.model.state_dict()),
-                      **model_paras}
+        assert all(
+            [
+                value == model_paras[key]
+                for key, value in gym_parameters.items()
+                if key in model_paras.keys()
+            ]
+        ), f"{model_paras=} vs. {gym_parameters=}"
+        final_dict = {
+            **gym_parameters,
+            **dict(model_state_dict=self.model.state_dict()),
+            **model_paras,
+        }
         final_dict["model_arch"] = final_dict["model_arch"].value
         torch.save(final_dict, filepath)
         self.logger.info(f"{self.model_arch} was successfully saved at {filepath}.")
@@ -509,7 +535,9 @@ class DeepGym(BaseGym):
         if not filepath.is_file():
             raise FileNotFoundError(f"{filepath=}")
         loaded_dict = torch.load(filepath, map_location=DEVICE)
-        logger.info(f"{loaded_dict['model_arch']} was successfully loaded from {filepath}.")
+        logger.info(
+            f"{loaded_dict['model_arch']} was successfully loaded from {filepath}."
+        )
         state_dict = loaded_dict.pop("model_state_dict")
         return loaded_dict, state_dict
 
@@ -585,11 +613,7 @@ class DeepGym(BaseGym):
                     future_steps=self.future_steps,
                 )
                 self.save_input_and_predictions(
-                    feature,
-                    target,
-                    output,
-                    sample_name=name,
-                    result_dir=result_dir
+                    feature, target, output, sample_name=name, result_dir=result_dir
                 )
                 if plot:
                     self.logger.debug(
@@ -618,12 +642,12 @@ class DeepGym(BaseGym):
             raise ValueError
 
     @convert("result_dir", converter=Path)
-    def train(
-            self,
-            result_dir: PathLike = Path("."),
-            training_phase: int = None,
-            save_model_frequently=True,
-            plot=True,
+    def train(  # noqa: C901
+        self,
+        result_dir: PathLike = Path("."),
+        training_phase: int = None,
+        save_model_frequently=True,
+        plot=True,
     ):
         if not isinstance(training_phase, int):
             raise ValueError
@@ -634,7 +658,7 @@ class DeepGym(BaseGym):
         while True:
             running_loss = []
             for _, (names, features, targets) in enumerate(
-                    tqdm(self.train_loader, logger=self.logger, log_level=logging.INFO)
+                tqdm(self.train_loader, logger=self.logger, log_level=logging.INFO)
             ):
                 batch_size, seq_len, _ = features.shape
                 self.logger.debug(
@@ -658,7 +682,7 @@ class DeepGym(BaseGym):
                         f"{outputs.size()=}"
                     )
                     assert (
-                            outputs.shape == targets.shape
+                        outputs.shape == targets.shape
                     ), f"major shape bug: {outputs.shape=} vs. {targets.shape}"
                     loss = self.criterion(outputs, targets)
                     loss = loss[~torch.isnan(loss)].mean()
@@ -697,9 +721,9 @@ class DeepGym(BaseGym):
                 if do_plot and plot:
                     plot_random_signal_in_batch(
                         names,
-                        features[:, :, -self.output_features:],
-                        targets[:, :, -self.output_features:],
-                        outputs[:, :, -self.output_features:],
+                        features[:, :, -self.output_features :],
+                        targets[:, :, -self.output_features :],
+                        outputs[:, :, -self.output_features :],
                         self.tot_iter,
                         result_dir=result_dir,
                         future_steps=self.future_steps,
