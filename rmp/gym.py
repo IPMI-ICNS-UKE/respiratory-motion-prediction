@@ -44,7 +44,6 @@ class BaseGym(ABC, LoggerMixin):
             train_batch_size: int,
             test_dataset: Dataset = None,
             eval_batch_size: int = None,
-            wandb_info: dict = None,
     ):
         self.model_arch = model_arch
         self.model = model

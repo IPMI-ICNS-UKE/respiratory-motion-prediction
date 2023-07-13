@@ -94,7 +94,6 @@ class Hyperoptimizer(LoggerMixin):
                 val_dataset=dev_dataset,
                 train_batch_size=self.constant_config["train_batch_size"],
                 eval_batch_size=self.constant_config["eval_batch_size"],
-                wandb_info=wandb_info,
             )
             validation_losses = gym.train(result_dir=result_dir)
         else:
@@ -111,7 +110,6 @@ class Hyperoptimizer(LoggerMixin):
                 max_tot_iter=hyper_parameters["max_iterations"],
                 learning_rate=hyper_parameters["learning_rate"],
                 weight_decay=self.constant_config["weight_decay"],
-                wandb_info=wandb_info,
                 lr_scheduler_linear_decay=self.constant_config.get(
                     "lr_scheduler_linear_decay", 1
                 ),
