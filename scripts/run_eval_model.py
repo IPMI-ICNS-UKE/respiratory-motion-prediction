@@ -19,4 +19,3 @@ if __name__ == "__main__":
     evaluater = Eval.init_dlinear_480() # select model and pred horizon here
     evaluater.eval_saved_model_using_test_set()
 
-
