@@ -33,7 +33,7 @@ def make_config(
     train_min_length_s: int,
     test_signal_length_s: int,
 ):
-    """Creating and checking configuration input before staring hyperparameter
+    """Creating and checking configuration input before starting hyperparameter
     search.
 
     :param model_arch: chosen model architecture
@@ -42,7 +42,7 @@ def make_config(
     :param future_steps : determines the prediction horizon, samples per second = 25 HZ; -> 12: 480ms ; 17: 680ms ; 23: 920ms
     :param train_signal_length_s: determines length of random singal subset (allows stacking/batching signal subsets). If None, entire signal is used.
     :param train_min_length_s: all signals shorter than train_min_length_s will be excluded from train set
-    :param test_signal_length_s: all signals shorter than test_signal_length_s will be excluded from val/test set # ToDo
+    :param test_signal_length_s: all signals shorter than test_signal_length_s will be excluded from val/test set
     :return:
     """
     flexible_config = dict(

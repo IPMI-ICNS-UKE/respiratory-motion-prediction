@@ -4,6 +4,7 @@ from pathlib import Path
 
 import dill
 import hyperopt
+import petname
 import torch.nn as nn
 import wandb
 from hyperopt import STATUS_OK, Trials, fmin, tpe
@@ -61,12 +62,21 @@ class Hyperoptimizer(LoggerMixin):
         pred_horizon = (
             40 * self.constant_config["future_steps"]
         )  # in ms; SPS=25 Hz assumed
-        wandb.init(
-            config={**self.constant_config, **hyper_parameters},
-            project=f"TSF-{self.constant_config['model_arch'].value}",
-            dir=RESULT_DIR,
-        )
-        run_name = wandb.run.name
+        use_wandb = False
+        try:
+            wandb.init(
+                config={**self.constant_config, **hyper_parameters},
+                project=f"TSF-{self.constant_config['model_arch'].value}",
+                dir=RESULT_DIR,
+                anonymous="allow",
+            )
+            run_name = wandb.run.name
+            use_wandb = True
+        except wandb.errors.Error:
+            run_name = petname.generate(3)
+            logger.warning(
+                "Cannot import weights and biases. Consider creating a free account and login for advanced results tracking!"
+            )
         result_dir = (
             RESULT_DIR
             / "HYPEROPT2"
@@ -74,6 +84,10 @@ class Hyperoptimizer(LoggerMixin):
             / f"{run_name}_{pred_horizon}_ms_output_{self.constant_config['output_features']}"
         )
         result_dir.mkdir(exist_ok=True, parents=True)
+        logger.info(
+            f"Local result directory of current hyper-optimizer run: {result_dir}"
+        )
+
         if self.constant_config["model_arch"] in [
             ModelArch.XGBOOST,
             ModelArch.LINEAR_OFFLINE,
@@ -117,7 +131,8 @@ class Hyperoptimizer(LoggerMixin):
                 save_model_frequently=True,
                 plot=True,
             )
-        wandb.finish()
+        if use_wandb:
+            wandb.finish()
         results = {
             "loss": validation_losses["mse"],
             "status": STATUS_OK,

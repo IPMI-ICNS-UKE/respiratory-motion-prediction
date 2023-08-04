@@ -46,12 +46,11 @@ Tested with Python 3.9.11 and Pytorch 1.11.0.
 - Track training and validation losses for different hyperparameter combinations with _weights&biases_ (wandb). 
 - Based on that, choose the best-performing model.
 
-Note that, for hyperparameter search a wandb account is required. Create a free account [here](https://docs.wandb.ai/quickstart) and login.
-
+We strongly recommend to create a free wandb account [(see here)](https://docs.wandb.ai/quickstart) and use it for loss tracking.
 ### Evaluation using trained models
 To reproduce our achieved results or to evaluate a newly trained model on the test set:
 - Go to _scripts/run_eval_model.py_.
-- Select a model and a prediction horizon by selecting a classmethod of Eval
+- Select a model and a prediction horizon by selecting a class method of Eval
   - Those methods follow the structure 'init_ModelArch_PredictionHorizon' (PredictionHorizon in ms)  
 - Start _scripts/run_eval_model.py_.
 - Evaluation might take some time and depending on the model requires much GPU capacity.

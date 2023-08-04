@@ -163,21 +163,23 @@ class BaseGym(ABC, LoggerMixin):
             y_true=targets,
             y_pred=outputs,
         )
-        wandb.log(
-            {
-                f"{phase}_mean_mse_per_batch": pred_errors["mse"],
-                f"{phase}_mean_rmse_per_batch": pred_errors["rmse"],
-                f"{phase}_mean_mae_per_batch": pred_errors["mae"],
-                f"{phase}_max_me_in_batch": pred_errors["me"],
-            },
-            step=seen_curves,
-        )
-        if "learning_rate" in kwargs.keys():
-            wandb.log(
-                {f"{phase}_learning_rate": kwargs.get("learning_rate")},
-                step=seen_curves,
+        log_msg = {
+            f"{phase}_mean_mse_per_batch": pred_errors["mse"],
+            f"{phase}_mean_rmse_per_batch": pred_errors["rmse"],
+            f"{phase}_mean_mae_per_batch": pred_errors["mae"],
+            f"{phase}_max_me_in_batch": pred_errors["me"],
+        }
+        try:
+            wandb.log(log_msg, step=seen_curves)
+            if "learning_rate" in kwargs.keys():
+                wandb.log(
+                    {f"{phase}_learning_rate": kwargs.get("learning_rate")},
+                    step=seen_curves,
+                )
+        except wandb.errors.Error:
+            logger.info(
+                f"DURING {phase.upper()}; STEP: {seen_curves}: ERRORS: {log_msg}"
             )
-
         if return_errors:
             return pred_errors
 
@@ -551,7 +553,9 @@ class DeepGym(BaseGym):
         self.logger.info(f"{training_phase=}")
         self.model.eval()
         names, features, targets, outputs = list(), list(), list(), list()
-        for i, (name, feature, target) in enumerate(tqdm(loader)):
+        for i, (name, feature, target) in enumerate(
+            tqdm(loader, logger=self.logger, log_level=logging.INFO)
+        ):
             feature = feature.to(DEVICE)
             target = target.to(DEVICE)
             batch_size, seq_len, input_features = feature.shape
