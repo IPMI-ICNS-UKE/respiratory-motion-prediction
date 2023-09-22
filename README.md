@@ -10,7 +10,7 @@ The six selected models are:
 - TRANSFORMER_TSF
 - XGBOOST
 
-After that, an evaluation on the test set can be performed. Note that, our in-house respiratory signal database is available [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
+After that, an evaluation on the test set can be performed. To explore our achieved results, an interactive dashboard is available at https://research.ipmi.uni-hamburg.de. Further, the utilized in-house respiratory signal database can be downlaoded from [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
 Feel free to add your own time-series forecasting models. 
 
 In our study, we investigated three prediction horizons (480ms, 680ms and 920ms). For each horizon and each model, an optimization was performed (yielding in 18 models in total). To reproduce our reported results, we provide our final models which can simply be re-evaluated on the test set.
