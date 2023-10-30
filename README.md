@@ -1,8 +1,7 @@
 # Respiratory motion prediction
-Respiratory motion prediction is about obtaining the respiratory amplitude value which is the prediction horizon ahead (uni-variate time-series forecasting, single point prediction). 
+Respiratory motion prediction (more precisely: respiratory signal prediction) means to find the respiratory amplitude value that is the prediction horizon ahead (uni-variate time-series forecasting, single point prediction). This repository provides the source code and models corresponding to our manuscript *Benchmarking real-time respiratory signal predictors in 4D SBRT* (currently under review).
 
-This framework provides training, validation and optimization of six models for respiratory motion prediction. 
-The six selected models are:
+The framework provides training, validation and optimization of six models for respiratory signal prediction:
 - LINEAR_OFFLINE
 - DLINEAR
 - LSTM
@@ -10,15 +9,14 @@ The six selected models are:
 - TRANSFORMER_TSF
 - XGBOOST
 
-After that, an evaluation on the test set can be performed. To explore our achieved results, an interactive dashboard is available at https://research.ipmi.uni-hamburg.de. Further, the utilized in-house respiratory signal database can be downlaoded from [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
-Feel free to add your own time-series forecasting models. 
+Final evaluation should be performed using the test set. 
 
-In our study, we investigated three prediction horizons (480ms, 680ms and 920ms). For each horizon and each model, an optimization was performed (yielding in 18 models in total). To reproduce our reported results, we provide our final models which can simply be re-evaluated on the test set.
+In our original study, we investigated three prediction horizons (480ms, 680ms and 920ms). For each horizon and each model, an optimization was performed (yielding in 18 models in total). To explore the results reported in our manuscript, an interactive dashboard is available at https://research.ipmi.uni-hamburg.de. The in-house respiratory signal database used can be downlaoded from [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
 
 Author: Lukas Wimmert ([l.wimmert@uke.de](mailto:author_email))
 
 ## Installation
-Download the database and install out python database package (_resp_db_) by following the instructions [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
+Download the database and install the python database package (_resp_db_) by following the instructions [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
 Then, clone this repository to your local machine:
 ```bash
 git clone https://github.com/IPMI-ICNS-UKE/respiratory-motion-prediction.git
@@ -46,7 +44,7 @@ Tested with Python 3.9.11 and Pytorch 1.11.0.
 - Track training and validation losses for different hyperparameter combinations with _weights&biases_ (wandb). 
 - Based on that, choose the best-performing model.
 
-We strongly recommend to create a free wandb account [(see here)](https://docs.wandb.ai/quickstart) and use it for loss tracking.
+We recommend creating a free wandb account [(see here)](https://docs.wandb.ai/quickstart) and using it for loss tracking.
 ### Evaluation using trained models
 To reproduce our achieved results or to evaluate a newly trained model on the test set:
 - Go to _scripts/run_eval_model.py_.
