@@ -23,10 +23,10 @@ from rmp.early_stopping import EarlyStopping
 from rmp.global_config import DEVICE, NUM_WORKERS, RESULT_DIR
 from rmp.metrics import calculate_prediction_errors, calculate_relative_rmse
 from rmp.models import ModelArch
-from rmp.my_utils.common_types import PathLike
-from rmp.my_utils.decorators import convert
-from rmp.my_utils.logger import LoggerMixin, tqdm
 from rmp.plotting import plot_random_signal_in_batch
+from rmp.utils.common_types import PathLike
+from rmp.utils.decorators import convert
+from rmp.utils.logger import LoggerMixin, tqdm
 
 logger = logging.getLogger(__name__)
 

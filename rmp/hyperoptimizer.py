@@ -23,9 +23,9 @@ from rmp.models import (
     XGBoostTSF,
     YourCustomModel,
 )
-from rmp.my_utils.common_types import PathLike
-from rmp.my_utils.decorators import convert
-from rmp.my_utils.logger import LoggerMixin
+from rmp.utils.common_types import PathLike
+from rmp.utils.decorators import convert
+from rmp.utils.logger import LoggerMixin
 
 logger = logging.getLogger(__name__)
 

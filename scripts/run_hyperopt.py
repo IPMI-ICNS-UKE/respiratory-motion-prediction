@@ -9,8 +9,6 @@ import logging
 from rmp.global_config import DATALAKE
 from rmp.hyperoptimizer import Hyperoptimizer
 from rmp.models import ModelArch
-from rmp.my_utils.input_paras_check import input_checks
-from rmp.my_utils.logger import init_fancy_logging
 from rmp.search_spaces import (
     SEARCH_SPACE_CUSTOM_MODEL,
     SEARCH_SPACE_DLINEAR,
@@ -20,6 +18,8 @@ from rmp.search_spaces import (
     SEARCH_SPACE_XGB,
     SEARCH_SPACE_TRANSFORMER_TSFv2,
 )
+from rmp.utils.input_paras_check import input_checks
+from rmp.utils.logger import init_fancy_logging
 
 logger = logging.getLogger(__name__)
 

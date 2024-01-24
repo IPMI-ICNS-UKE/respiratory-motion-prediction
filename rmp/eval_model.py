@@ -14,8 +14,8 @@ from rmp.models import (
     TransformerTSFv2,
     XGBoostTSF,
 )
-from rmp.my_utils.common_types import PathLike
-from rmp.my_utils.logger import LoggerMixin
+from rmp.utils.common_types import PathLike
+from rmp.utils.logger import LoggerMixin
 
 logger = logging.getLogger(__name__)
 
@@ -377,7 +377,6 @@ class Eval(LoggerMixin):
                     n_heads=loaded_model_parameters["n_heads"],
                     dropout=0,
                 )
-
             else:
                 raise ValueError(f"{self.config['model_arch']=} not supported.")
             model.load_state_dict(state_dict=state_dict)

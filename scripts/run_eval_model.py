@@ -3,7 +3,7 @@
 import logging
 
 from rmp.eval_model import Eval
-from rmp.my_utils.logger import init_fancy_logging
+from rmp.utils.logger import init_fancy_logging
 
 if __name__ == "__main__":
     init_fancy_logging()

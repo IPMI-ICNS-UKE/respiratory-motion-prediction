@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import logging
 
+import requests
+
 from rmp.global_config import DATALAKE
 from rmp.models import ModelArch
 
@@ -75,10 +77,16 @@ def input_checks(config: dict) -> dict:  # noqa: C901
         and config["train_signal_length_s"] > config["train_min_length_s"]
     ):
         raise ValueError(
-            f"All signals of the training set have to be longer than the signal subset.\n "
+            f"All signals of the training set have to be longer than the "
+            f"signal subset.\n "
             f"Otherwise, sampling is impossile. \n"
             f"{config['train_signal_length_s']=} vs {config['train_min_length_s']=}"
         )
-    if not DATALAKE.is_file():
-        raise FileNotFoundError(f"{DATALAKE=} is not a valid file.")
+    try:
+        response = requests.get(DATALAKE + "/docs")
+        response.raise_for_status()
+        logger.info(f"API connection to {DATALAKE} is successful.")
+    except requests.exceptions.RequestException as e:
+        logger.error(f"API connection to {DATALAKE} failed. Error: {e}")
+        raise requests.HTTPError(f"API connection to {DATALAKE} failed. Error: {e}")
     return config

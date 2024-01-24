@@ -13,8 +13,8 @@ import numpy as np
 
 from rmp import metrics
 from rmp.dataloader import ModelPhases
-from rmp.my_utils.common_types import PathLike
-from rmp.my_utils.decorators import convert
+from rmp.utils.common_types import PathLike
+from rmp.utils.decorators import convert
 
 logger = logging.getLogger(__name__)
 

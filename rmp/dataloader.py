@@ -3,18 +3,17 @@ scaling etc.)"""
 from __future__ import annotations
 
 from enum import Enum
-from pathlib import Path
 from random import randrange
 from typing import Any
 
 import numpy as np
 import torch
-from resp_db.client import RpmDatabaseClient
 from torch import Tensor
 from torch.utils.data import Dataset
 
-from rmp.my_utils.logger import LoggerMixin
-from rmp.my_utils.time_series_utils import (
+from rmp.api_client import RpmApiClient
+from rmp.utils.logger import LoggerMixin
+from rmp.utils.time_series_utils import (
     add_white_noise_to_signal,
     fourier_smoothing,
     time_series_scaling,
@@ -32,7 +31,7 @@ class ModelPhases(Enum):
 class RpmSignals(Dataset, LoggerMixin):
     def __init__(
         self,
-        db_root: Path,
+        db_root: str,
         max_num_curves: int | None = None,
         phase: ModelPhases = ModelPhases.TRAINING,
         signal_length_s: int | None = None,
@@ -57,40 +56,41 @@ class RpmSignals(Dataset, LoggerMixin):
         self.scaling_period_s = scaling_period_s
         self.input_features = input_features  # input features per time step
         self.output_features = output_features  # output features per time step
+
         if self.output_features != 1:
             raise ValueError("This project supports only a single point prediction")
         self.cache_returned_data = cache_returned_data  # True
         self.future_points = future_points
-        client = RpmDatabaseClient(db_filepath=db_root)
-        with client:
-            query = client.get_signals_of_dl_dataset(
-                dl_dataset=self.mode.value, project="short-term-prediction"
-            )
-        self.query = [
+
+        client = RpmApiClient(base_url=db_root, mode=self.mode.value)
+        self.signals = client.signals
+        self.signals = [
             signal
-            for signal in query
-            if client.preprocess_signal(signal.df_signal).time.max() > min_length_s
+            for signal in self.signals
+            if RpmApiClient.preprocess_signal(signal.df_signal).time.max()
+            > min_length_s
         ]
-        self.query = self.query[:max_num_curves]
+        self.signals = self.signals[:max_num_curves]
         self.logger.info(
-            f"{self.mode.value.upper()} dataset was successfully loaded. It contains {len(self.query)} signals."
+            f"{self.mode.value.upper()} dataset was successfully loaded. "
+            f"It contains {len(self.signals)} signals."
         )
 
     def __len__(self):
-        return len(self.query)
+        return len(self.signals)
 
     def __getitem__(
         self, index: int
     ) -> tuple[str, Tensor, Tensor, dict[str, Any]] | tuple[str, Tensor, Tensor]:
         """Preprocessing of raw signals in a sliding window fashion."""
-        signal = self.query[index]
+        signal = self.signals[index]
         research_number, modality, fraction = (
-            signal.research_number,
+            signal.research_number_pid,
             signal.modality,
             signal.fraction,
         )
         name = f"{research_number}_{modality}_{fraction}"
-        df = RpmDatabaseClient.preprocess_signal(
+        df = RpmApiClient.preprocess_signal(
             df_signal=signal.df_signal,
             sampling_rate=self.sampling_rate,
             only_beam_on=True,
@@ -215,7 +215,8 @@ class RpmSignals(Dataset, LoggerMixin):
     ) -> tuple[np.ndarray, np.ndarray]:
         if input_features < output_features or output_features > future_points:
             raise ValueError(
-                f"Cannot handle given input parameters in order to produce continuous output. \n"
+                f"Cannot handle given input parameters in order to produce "
+                f"continuous output. \n"
                 f"Parameters: \n"
                 f"{future_points=}\n"
                 f"{input_features=}\n"

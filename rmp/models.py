@@ -11,7 +11,7 @@ from sklearn.linear_model import Ridge
 from torch import nn
 
 from rmp.global_config import DEVICE
-from rmp.my_utils.logger import LoggerMixin
+from rmp.utils.logger import LoggerMixin
 
 
 class ModelArch(Enum):
