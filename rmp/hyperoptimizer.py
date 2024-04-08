@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 import logging
 from pathlib import Path
@@ -23,7 +25,7 @@ from rmp.models import (
     XGBoostTSF,
     YourCustomModel,
 )
-from rmp.utils.common_types import PathLike
+from rmp.utils.common_types import MaybeSequence, PathLike
 from rmp.utils.decorators import convert
 from rmp.utils.logger import LoggerMixin
 
@@ -56,8 +58,10 @@ class Hyperoptimizer(LoggerMixin):
         model = self.init_model(
             hyper_para=hyper_parameters, constant_config=self.constant_config
         )
-        train_dataset, dev_dataset, _ = self.init_datasets(
-            hyper_para=hyper_parameters, constant_config=self.constant_config
+        train_dataset, dev_dataset = self.init_datasets(
+            hyper_para=hyper_parameters,
+            constant_config=self.constant_config,
+            phases=[ModelPhases.TRAINING, ModelPhases.VALIDATION],
         )
         pred_horizon = (
             40 * self.constant_config["future_steps"]
@@ -153,8 +157,11 @@ class Hyperoptimizer(LoggerMixin):
 
     @staticmethod
     def init_datasets(
-        hyper_para: dict, constant_config: dict
-    ) -> tuple[Dataset, Dataset, Dataset]:
+        hyper_para: dict, constant_config: dict, phases: MaybeSequence[ModelPhases]
+    ) -> Dataset | tuple[Dataset, ...]:
+
+        if isinstance(phases, ModelPhases):
+            phases = [phases]
         dataset = partial(
             RpmSignals,
             db_root=constant_config["db_root"],
@@ -181,22 +188,32 @@ class Hyperoptimizer(LoggerMixin):
             )
         else:
             raise NotImplementedError
-        train_dataset = dataset(
-            phase=ModelPhases.TRAINING,
-            signal_length_s=constant_config["train_signal_length_s"],
-            min_length_s=constant_config["train_min_length_s"],
-        )
-        dev_dataset = dataset(
-            phase=ModelPhases.VALIDATION,
-            signal_length_s=constant_config["test_signal_length_s"],
-            min_length_s=dev_min_length_s,
-        )
-        test_dataset = dataset(
-            phase=ModelPhases.TESTING,
-            signal_length_s=constant_config["test_signal_length_s"],
-            min_length_s=dev_min_length_s,
-        )
-        return train_dataset, dev_dataset, test_dataset
+        datasets = {}
+        if ModelPhases.TRAINING in phases:
+            train_dataset = dataset(
+                phase=ModelPhases.TRAINING,
+                signal_length_s=constant_config["train_signal_length_s"],
+                min_length_s=constant_config["train_min_length_s"],
+            )
+            datasets[ModelPhases.TRAINING] = train_dataset
+        if ModelPhases.VALIDATION in phases:
+            dev_dataset = dataset(
+                phase=ModelPhases.VALIDATION,
+                signal_length_s=constant_config["test_signal_length_s"],
+                min_length_s=dev_min_length_s,
+            )
+            datasets[ModelPhases.VALIDATION] = dev_dataset
+        if ModelPhases.TESTING in phases:
+            test_dataset = dataset(
+                phase=ModelPhases.TESTING,
+                signal_length_s=constant_config["test_signal_length_s"],
+                min_length_s=dev_min_length_s,
+            )
+            datasets[ModelPhases.TESTING] = test_dataset
+        datasets = tuple(datasets[phase] for phase in phases)
+        if len(datasets) == 1:
+            datasets = datasets[0]
+        return datasets
 
     @staticmethod
     def init_model(hyper_para: dict, constant_config: dict) -> nn.Module:

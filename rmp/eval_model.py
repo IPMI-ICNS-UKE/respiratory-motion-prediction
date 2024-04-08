@@ -296,9 +296,10 @@ class Eval(LoggerMixin):
     def eval_saved_model_using_test_set(
         self,
     ):
-        train_dataset, dev_dataset, test_dataset = Hyperoptimizer.init_datasets(
-            self.config, self.config
+        test_dataset = Hyperoptimizer.init_datasets(
+            self.config, self.config, phases=ModelPhases.TESTING
         )
+
         if self.config["model_arch"] in [ModelArch.XGBOOST, ModelArch.LINEAR_OFFLINE]:
             logger.info(f"{self.model_filepath=}")
             model, loaded_model_parameters = MachineGym.load_model(
@@ -333,8 +334,8 @@ class Eval(LoggerMixin):
                 output_features=loaded_model_parameters["output_features"],
                 input_features=loaded_model_parameters["input_features"],
                 future_steps=loaded_model_parameters["future_steps"],
-                train_dataset=train_dataset,
-                val_dataset=dev_dataset,
+                train_dataset=None,
+                val_dataset=None,
                 test_dataset=test_dataset,
                 train_batch_size=self.config.get("train_batch_size", 1),
                 eval_batch_size=self.config["eval_batch_size"],
@@ -386,8 +387,8 @@ class Eval(LoggerMixin):
                 output_features=loaded_model_parameters["output_features"],
                 input_features=loaded_model_parameters["input_features"],
                 future_steps=loaded_model_parameters["future_steps"],
-                train_dataset=train_dataset,
-                val_dataset=dev_dataset,
+                train_dataset=None,
+                val_dataset=None,
                 test_dataset=test_dataset,
                 train_batch_size=self.config.get("train_batch_size", 1),
                 eval_batch_size=self.config["eval_batch_size"],

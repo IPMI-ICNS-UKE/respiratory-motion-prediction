@@ -39,8 +39,8 @@ class BaseGym(ABC, LoggerMixin):
         output_features: int,
         input_features: int,
         future_steps: int,
-        train_dataset: Dataset,
-        val_dataset: Dataset,
+        train_dataset: Dataset | None,
+        val_dataset: Dataset | None,
         train_batch_size: int,
         test_dataset: Dataset = None,
         eval_batch_size: int = None,
@@ -53,20 +53,23 @@ class BaseGym(ABC, LoggerMixin):
         self.train_batch_size = train_batch_size
         self.eval_batch_size = eval_batch_size or train_batch_size
         persistent_workers = True if NUM_WORKERS > 0 else False
-        self.train_loader = torch.utils.data.DataLoader(
-            train_dataset,
-            batch_size=self.train_batch_size,
-            shuffle=True,
-            num_workers=NUM_WORKERS,
-            persistent_workers=persistent_workers,
-        )
-        self.val_loader = torch.utils.data.DataLoader(
-            val_dataset,
-            batch_size=self.eval_batch_size,
-            shuffle=False,
-            persistent_workers=persistent_workers,
-            num_workers=NUM_WORKERS,
-        )
+
+        if train_dataset:
+            self.train_loader = torch.utils.data.DataLoader(
+                train_dataset,
+                batch_size=self.train_batch_size,
+                shuffle=True,
+                num_workers=NUM_WORKERS,
+                persistent_workers=persistent_workers,
+            )
+        if val_dataset:
+            self.val_loader = torch.utils.data.DataLoader(
+                val_dataset,
+                batch_size=self.eval_batch_size,
+                shuffle=False,
+                persistent_workers=persistent_workers,
+                num_workers=NUM_WORKERS,
+            )
         if test_dataset:
             self.test_loader = torch.utils.data.DataLoader(
                 test_dataset,
@@ -600,7 +603,9 @@ class DeepGym(BaseGym):
         elif phase is ModelPhases.TESTING:
             self.logger.info("Entered testing")
             errors_all_samples = list()
-            for name, feature, target, output in zip(names, features, targets, outputs):
+            for name, feature, target, output in tqdm(
+                zip(names, features, targets, outputs)
+            ):
                 feature = feature.cpu().numpy()
                 target = target.cpu().numpy()
                 output = output.cpu().numpy()
