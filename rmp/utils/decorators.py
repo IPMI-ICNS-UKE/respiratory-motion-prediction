@@ -3,7 +3,7 @@ import inspect
 import logging
 from typing import Any, Dict, Tuple
 
-from rmp.my_utils.common_types import Function
+from rmp.utils.common_types import Function
 
 logger = logging.getLogger(__name__)
 

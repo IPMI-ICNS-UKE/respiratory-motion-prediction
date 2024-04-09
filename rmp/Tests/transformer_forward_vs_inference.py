@@ -8,7 +8,7 @@ import torch
 from rmp.dataloader import RpmSignals
 from rmp.global_config import DEVICE
 from rmp.models import Transformer
-from rmp.my_utils.logger import LoggerMixin
+from rmp.utils.logger import LoggerMixin
 
 logger = logging.getLogger(__name__)
 

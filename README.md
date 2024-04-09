@@ -1,5 +1,16 @@
 # Respiratory motion prediction
-Respiratory motion prediction (more precisely: respiratory signal prediction) means to find the respiratory amplitude value that is the prediction horizon ahead (uni-variate time-series forecasting, single point prediction). This repository provides the source code and models corresponding to our manuscript *Benchmarking real-time respiratory signal predictors in 4D SBRT* (currently under review).
+Respiratory motion prediction (more precisely: respiratory signal prediction) means to find the respiratory amplitude value that is the prediction horizon ahead (uni-variate time-series forecasting, single point prediction). This repository provides the source code and models corresponding to our manuscript *Benchmarking machine learning-based real-time respiratory signal predictors in 4D SBRT*.
+```
+@article{wimmert2024benchmarking,
+  doi={10.1002/mp.17038}
+  title={Benchmarking machine learning-based real-time respiratory signal predictors in 4D SBRT},
+  author={Wimmert, Lukas and Nielsen, Maximilian and Madesta, Frederic and Gauer, Tobias and Hofmann, Christian and Werner, Rene},
+  journal={Medical Physics},
+  year={2024},
+  publisher={Wiley Online Library}
+}
+```
+
 
 The framework provides training, validation and optimization of six models for respiratory signal prediction:
 - LINEAR_OFFLINE
@@ -11,13 +22,17 @@ The framework provides training, validation and optimization of six models for r
 
 Final evaluation should be performed using the test set. 
 
-In our original study, we investigated three prediction horizons (480ms, 680ms and 920ms). For each horizon and each model, an optimization was performed (yielding in 18 models in total). To explore the results reported in our manuscript, an interactive dashboard is available at https://research.ipmi.uni-hamburg.de. The in-house respiratory signal database used can be downlaoded from [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
+In our original study, we investigated three prediction horizons (480ms, 680ms and 920ms). For each horizon and each model, an optimization was performed (yielding in 18 models in total). To explore the results reported in our manuscript, an interactive dashboard is available at https://research.ipmi.uni-hamburg.de. For the in-house respiratory signal database, we provide a public [REST-API](https://lukasvm.iam-extern.de/api/resp-db/v1/docs/).
+
+
 
 Author: Lukas Wimmert ([l.wimmert@uke.de](mailto:author_email))
 
+
+
+
 ## Installation
-Download the database and install the python database package (_resp_db_) by following the instructions [here](https://github.com/IPMI-ICNS-UKE/respiratory-signal-database/tree/main).
-Then, clone this repository to your local machine:
+Clone this repository to your local machine:
 ```bash
 git clone https://github.com/IPMI-ICNS-UKE/respiratory-motion-prediction.git
 ```
@@ -29,7 +44,6 @@ pip install -e .
 Lastly, go to _rmp/global_config.py_ and change 
 ```python
 RESULT_DIR = Path(".../results") # dir where hyperopt results are stored
-DATALAKE = Path(".../open_access_rpm_signals_master.db")  # change to path of downloaded database
 ```
 Tested with Python 3.9.11 and Pytorch 1.11.0.
 

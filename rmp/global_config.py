@@ -4,12 +4,12 @@ from pathlib import Path
 
 import torch
 
-from rmp.my_utils.logger import init_fancy_logging
+from rmp.utils.logger import init_fancy_logging
 
 DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 RESULT_DIR = Path(".")  # change
 RESULT_DIR.mkdir(exist_ok=True)
-DATALAKE = Path(".../open_access_rpm_signals_master.db")  # change, path to databse
+DATALAKE = "https://lukasvm.iam-extern.de/api/resp-db/v1"
 NUM_WORKERS = 0
 
 SAVED_MODELS_DIR = Path("../trained_models")

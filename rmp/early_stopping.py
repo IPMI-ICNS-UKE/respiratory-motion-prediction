@@ -1,4 +1,4 @@
-from rmp.my_utils.logger import LoggerMixin
+from rmp.utils.logger import LoggerMixin
 
 
 class EarlyStopping(LoggerMixin):
