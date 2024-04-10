@@ -11,3 +11,4 @@ tqdm==4.65.0
 wandb==0.15.5
 xgboost==1.7.6
 petname
+aiohttp==3.9.0
