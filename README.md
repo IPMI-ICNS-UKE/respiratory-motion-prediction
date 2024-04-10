@@ -45,8 +45,7 @@ Lastly, go to _rmp/global_config.py_ and change
 ```python
 RESULT_DIR = Path(".../results") # dir where hyperopt results are stored
 ```
-Tested with Python 3.9.11 and Pytorch 1.11.0.
-
+Tested with Python 3.9.11 and PyTorch 1.11.0. If you encounter any difficulties related to PyTorch or CUDA, we recommend reinstalling PyTorch following the official [installation guidelines](https://pytorch.org/get-started/locally/).
 
 
 ## Usage
