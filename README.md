@@ -22,13 +22,7 @@ The framework provides training, validation and optimization of six models for r
 
 Final evaluation should be performed using the test set. 
 
-<<<<<<< HEAD
 In our original study, we investigated three prediction horizons (480ms, 680ms and 920ms). For each horizon and each model, an optimization was performed (yielding in 18 models in total). To explore the results reported in our manuscript, an interactive dashboard is available at https://research.ipmi.uni-hamburg.de. For the in-house respiratory signal database, we provide a public [REST-API](https://lukasvm.iam-extern.de/api/resp-db/v1/docs/) and the corresponding [dashboard](https://lukasvm.iam-extern.de/dashboard/resp-db/v1).
-=======
-In our original study, we investigated three prediction horizons (480ms, 680ms and 920ms). For each horizon and each model, an optimization was performed (yielding in 18 models in total). To explore the results reported in our manuscript, an interactive dashboard is available at https://research.ipmi.uni-hamburg.de. For the in-house respiratory signal database, we provide a public [REST-API](https://lukasvm.iam-extern.de/api/resp-db/v1/docs/) and the corresponding [dashboard](https://lukasvm.iam-extern.de/api/resp-db/v1/docs/).
->>>>>>> main
-
-
 
 Author: Lukas Wimmert ([l.wimmert@uke.de](mailto:author_email))
 
